@@ -1,0 +1,77 @@
+***Social Modeler README***
+
+ABOUT
+-----
+
+SocialModeler is a tool that uses natural language processing and topic modeling techniques to help understand content and trends in news and social media. The output of the analysis is topic information (top features, documents) as well as prevalence data, such as topic prevalence over time and for various locations, sources, entities, and sentiments. 
+
+It uses a graphical user interface to both configure/build the model and display the results of the fitted model.
+
+
+DEPENDENCIES
+------------
+ 
+The social-modeler.zip and the social-modeler_wR bundles come pre-packaged with several .jar dependencies:
+
+-OpenCSV
+-PostgreSQL JDBC Driver
+(Note: The code supports MySQL and MS SQL Server as well. If you will be importing data from one of these DBs, you will need to add the driver for these to the classpath yourself, until I get around to including them).
+
+SocialModeler uses R and the 'lda' R package to build models. The social-modeler_wR bundles come pre-packaged with R binaries, while the social-modeler.zip bundle does not. If you are using the social-modeler.zip bundle, you will need to point SocialModeler to the /bin directory of your R installation in the Build tab of the UI.
+
+
+INSTALLATION
+------------
+
+First, note that social-modeler_wR bundles are only available for Windows. If you are using another operating system, download the social-modeler.zip bundle. You will need to install R for your operating system (http://cran.us.r-project.org/), and install the 'lda' package (at the R command line, type 'install.packages("lda")' and follow the prompts).
+
+Unzip your bundle. In the root directory, you will see a file called 'socialModeler.jar'. If you are using Windows or OSX, you can double-click this to start Social modeler. On any platform, you can run it from the command line with:
+
+java -jar socialModeler.jar
+
+
+DATA
+----
+
+There is an example data set in the zip file at https://sourceforge.net/projects/socialmodeler/files/ANC_Example.zip/download
+It contains data in the files format described below. There is a README contained in the compressed directory for how to preprocess and build a model with the dataset.
+
+Source documents can come from file (see format explanation below) or from a SQL database (currently supported are MySQL, PostgreSQL, and MS SQL Server-- See the note in DEPENDENCIES concerning drivers for MySQL and SQL Server). 
+
+From DB--
+If you are using a DB, the documents can be in almost any schema. The only contraints are that documents have a unique integer identifier and a datetime associated with them. If metadata (region, entity, sentiment, etc) are included, you must be able to query a particular metadata value for a document given the document's id.
+
+TODO: Add example DB queries
+
+From File--
+Each document must be a raw text file that sits within the data root directory. Each document file must be named as <id>.txt, where id is a unique integer id.
+A directory called 'metadata/' must exist within the data root directory. It must contain at least two files: 'info.csv', and a time/date file. 'info.csv' contains information about the time/date variable and all metadata variables of interest. Here is an example 'info.csv' file:
+
+variable,file,type
+time,time.csv,timestamp
+region,region.csv,string
+
+The first line is a header (which is required). We can see that each entry should contain a variable name, the relevant metadata file, and the data type (NOTE: We currently only support datetime for date/time and string for metadata variables). This file follows traditional CSV format standards (see http://tools.ietf.org/html/rfc4180). The second line is the time/date variable information, whose values, as we can see, are in a file in the 'metadata/' directory called 'time.csv'. A minimum 'info.csv' MUST contain this line. The third line is info about a metadata variable, 'region', whose values are specified in 'region.csv' in the 'metadata/' directory.
+An example 'time.csv' (required) is:
+
+1,"2007-02-08 00:00:00"
+2,"2007-02-08 00:00:00"
+3,"2007-09-28 00:00:00"
+4,"2007-02-11 00:00:00"
+5,"2007-02-06 00:00:00"
+
+and an example 'region.csv' (optional metadata) is:
+
+1,"Kandahar"
+2, "Ghazni"
+3, "Kandahar"
+4, "Kabul"
+5, "Maydan Wardak"
+
+Note that the format for the date/time csv and all metadata files is a CSV without a header that contains two columns. The first is the document id (which, as described above, is the document file name), and the second is the metadata value. For the time variable of type datetime, this must be in "yyyy-MM-dd HH:mm:SS" format.
+
+
+QUESTIONS/CONCERNS/FEEDBACK
+---------------------------
+
+Feel free to send an email to bgsimpkins@gmail.com if you have any questions, concerns, or feedback.
